@@ -1,0 +1,17 @@
+Raw Time Series
+↓
+EDA + Stability Analysis
+↓
+Feature Engineering (Lag + Seasonal + Rolling + Calendar)
+↓
+Leakage Audit
+↓
+Train / Validation Split (Time Ordered)
+↓
+Model Selection + Hyperparameter Tuning
+↓
+Recursive or Direct Forecasting
+↓
+Evaluation vs Baseline
+↓
+Monitoring
