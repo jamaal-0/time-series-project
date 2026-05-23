@@ -1,4 +1,0 @@
-train,evaluate and save SARIMAX model 
-train,evaluate and save ML tree regression model 
-train,evaluate and save DNN model 
-

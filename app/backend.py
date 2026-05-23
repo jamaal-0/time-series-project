@@ -1,75 +1,64 @@
 from fastapi import FastAPI
-from pydantic_models import SalesObservation, ForecastRequest, ForecastResponse
+from pydantic_models import ForecastRequest, ForecastResponse
 import pandas as pd
 import numpy as np
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from src.utils import load_object, convert_history_to_dataframe
-from src.features.feature_engineering import featureEngineering
-from .api_forecast import recursive_forecast
 
-
-# ---------------------------
-# Load models globally (cache)
-# ---------------------------
 
 sarima_model = None
-gbm_model = None
-gbm_features = None
+gbm_ml_forecast_mmodel = None
 
-
-# ---------------------------
-# Lifespan Manager
-# ---------------------------
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
     global sarima_model
-    global gbm_model
-    global gbm_features
+    global gbm_ml_forecast_mmodel
 
     # Load models here
     sarima_model = load_object('/Users/v/Data Science Projects/time-series-project/models/sarima_model')
-    gbm_model = load_object('/Users/v/Data Science Projects/time-series-project/models/gbm_model')
+    gbm_ml_forecast_mmodel = load_object('/Users/v/Data Science Projects/time-series-project/models/gbm_model')
 
     yield
 
-    # Optional cleanup logic
     print("Shutting down app")
 
 
-# ---------------------------
-# FastAPI App Initialization
-# ---------------------------
 
 app = FastAPI(lifespan=lifespan)
 
 
 @app.post('/sarima-forecast')
 def sarima_forecast(horizon: int):
-
     forecast = sarima_model.forecast(steps=horizon)
+    preds = forecast.tolist()
 
-    return {
-        "forecast": forecast.tolist(),
-        "horizon": horizon
-    }
+    return ForecastResponse(
+        forecast=preds,
+        horizon=horizon,
+        mean_forecast=float(np.mean(preds))
+    )
+
 
 @app.post('/gbm-forecast', response_model=ForecastResponse)
-def gbm_forecast(request:ForecastRequest):
-
-    feature_engineer = featureEngineering()
-
-     #convert request to dataframe
+def gbm_forecast(request: ForecastRequest):
     df = convert_history_to_dataframe(request.history)
+    df = df.rename(columns={"SalesAmount": "y"})
+    df = df.reset_index(drop=True)
+    df["unique_id"] = 0
+    df["ds"] = pd.to_datetime([obs.Date for obs in request.history])
 
-    #do the feature engineering on the request.history dataframe
-    df = feature_engineer.create_features(df)
-    
-    #recursively predict for a given horizon
-    preds = recursive_forecast(df, gbm_model, request.horizon)
+    forecast_df = gbm_ml_forecast_mmodel.predict(
+        request.horizon,
+        new_df=df
+    )
 
-    #return according to response model
-    return ForecastResponse(forecast=preds)
+    preds = forecast_df["LGBMRegressor"].tolist()
+
+    return ForecastResponse(
+        forecast=preds,
+        horizon=request.horizon,
+        mean_forecast=float(np.mean(preds))
+    )
 

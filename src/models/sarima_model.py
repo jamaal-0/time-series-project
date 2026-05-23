@@ -15,7 +15,7 @@ class Sarima():
 
     def carry_out_cv(self, order,seasonal_order, train_size=0.8, horizon=3):
         
-        """ obtain the folds for cv and carry out cv to obtain the MAE of the set of hyperparameters and the true forecast """
+    #obtain the folds for cv and carry out cv to obtain the MAE of the set of hyperparameters and the true forecast
         self.sales = self.sales.dropna()
         n = len(self.sales)
         errors = []
@@ -66,13 +66,12 @@ class Sarima():
         
     
     def create_param_grid(self):
-        """ create the param grid for cv """
         
 
-        # ---------- Parameter Grid ----------
+        
 
         p = range(0, 3)
-        d = range(0,2)           # You already differenced manually
+        d = range(0,1)           
         q = range(0, 3)
 
         P = range(0, 2)
@@ -93,7 +92,7 @@ class Sarima():
         return sarima_grid
     
     def hyperparameter_tuning(self, sarima_grid):
-        """ do cross validation for the hyperparameters tuning to select best: p, q, P and Q """
+        #do cross validation for the hyperparameters tuning to select best: p, q, P and Q
         best_score = np.inf
         best_params = None
 
@@ -120,7 +119,7 @@ class Sarima():
         return best_params
     
     def forecast_best_params(self,train_series,best_order, best_seasonal):
-        """ obtain best model and forecast """
+        #obtain best model and forecast 
         #forecast_horizon = len(test_self.sales)
         train_series = train_series.dropna()
         final_model = SARIMAX(

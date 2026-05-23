@@ -53,20 +53,4 @@ class Cleaning():
         
 
     
-     
-'''
-if __name__ == '__main__':
-    ingestion_obj = Ingestion('/Users/v/Data Science Projects/time-series-project/data/train.csv')
-    data = ingestion_obj.read_csv()
-    test_set,train_set = ingestion_obj.test_train_split(data)
-    train_data_path, test_data_path = ingestion_obj.upload_csv(test_set,train_set)
-    Cleaning_obj = Cleaning(test_data_path)
-    Cleaning_obj.clean_data()
-    monthly_sales = Cleaning_obj.obtain_monthly_sales()
-    print(type(monthly_sales.index))
-    box_cox_diff_monthly_sales,lam = Cleaning_obj.make_stationary(monthly_sales)
-    test_results = Cleaning_obj.ADF_test(box_cox_diff_monthly_sales)
-
-
-'''
     
