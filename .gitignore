@@ -1,13 +1,27 @@
-venv/
+# OS
+
+.DS_Store
+
+# Python cache
 
 __pycache__/
 
 *.pyc
 
-.DS_Store
+# Environments
 
-models/
+venv/
+
+.env
+
+# Models / artifacts
+
+artifacts/
 
 *.pkl
 
-.env
+*.joblib
+
+# Logs
+
+*.log
