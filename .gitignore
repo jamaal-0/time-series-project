@@ -16,7 +16,7 @@ venv/
 
 # Models / artifacts
 
-artifacts/
+models/
 
 *.pkl
 
